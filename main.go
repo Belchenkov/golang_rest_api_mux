@@ -65,7 +65,16 @@ func updateBook(w http.ResponseWriter, r *http.Request) {
 
 // Delete Book
 func deleteBook(w http.ResponseWriter, r *http.Request) {
-
+	w.Header().Set("Content-Type", "application/json")
+	params := mux.Vars(r)
+	for index, item := range books {
+		if item.ID == params["id"] {
+			books = append(books[:index], books[index+1:]...) // how slice in JS
+			break
+		}
+		
+	}
+	json.NewEncoder(w).Encode(books)
 }
 
 func main() {
@@ -89,8 +98,8 @@ func main() {
 	r.HandleFunc("/api/books", getBooks).Methods("GET")
 	r.HandleFunc("/api/book/{id}", getBook).Methods("GET")
 	r.HandleFunc("/api/books", createBook).Methods("POST")
-	r.HandleFunc("/api/books/{id}", updateBook).Methods("PUT")
-	r.HandleFunc("/api/books/{id}", deleteBook).Methods("DELETE")
+	r.HandleFunc("/api/book/{id}", updateBook).Methods("PUT")
+	r.HandleFunc("/api/book/{id}", deleteBook).Methods("DELETE")
 
 	log.Fatal(http.ListenAndServe(":8000", r))
 }
